@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_transfer_tree" model="ir.ui.view">
+        <field name="name">stock.transfer.tree</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_stock_transfer_form" model="ir.ui.view">
+        <field name="name">stock.transfer.form</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Move Lines" create="0" edit="0">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                    <button name="confirm" states="draft" type="object" string="Confirm"/>
+                    <button name="cancel" states="confirm" type="object" string="Cancel"/>
+                    <button name="reset" states="cancel" type="object" string="Reset To Draft"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <field name="stock_transfer_line">
+                        <form string='Lines'>
+                            <group>
+                                <group>
+                                    <field name="from_product_id"/>
+                                    <field name="from_product_uom_id"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="from_location_id"/>
+                                    <field name="from_location_dest_id"/>
+                                </group>
+                                <group>
+                                    <field name="to_product_id"/>
+                                    <field name="to_product_uom_id"/>
+                                    <field name="to_location_id"/>
+                                    <field name="to_location_dest_id"/>
+                                    <field name="move_id"/>
+                                </group>
+                            </group>
+                        </form>
+                        <tree string='Lines'>
+                            <field name="from_product_id"/>
+                            <field name="from_product_uom_id"/>
+                            <field name="product_uom_qty"/>
+                            <field name="from_location_id"/>
+                            <field name="from_location_dest_id"/>
+                            <field name="to_product_id"/>
+                            <field name="to_product_uom_id"/>
+                            <field name="to_location_id"/>
+                            <field name="to_location_dest_id"/>
+                            <field name="move_id"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="stock_stock_transfer_view_search" model="ir.ui.view">
+        <field name="name">stock.transfer.search</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <search string="Stock Moves">
+                <field name="name"/>
+                <field name="state"/>
+            </search>
+        </field>
+    </record>
+
+    
+    <record id="stock_stock_transfer_action" model="ir.actions.act_window">
+            <field name="name">Stock Transfer</field>
+            <field name="res_model">stock.transfer</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_stock_transfer_tree"/>
+            <field name="context">{}</field>
+    </record>
+
+    <menuitem 
+        action="stock_stock_transfer_action" 
+        id="stock_stock_transfer_menu" 
+        parent="stock.menu_warehouse_report" sequence="150"/>
+</odoo>
