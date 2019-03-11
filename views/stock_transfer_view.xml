@@ -1,92 +1,328 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <record id="view_stock_transfer_tree" model="ir.ui.view">
-        <field name="name">stock.transfer.tree</field>
-        <field name="model">stock.transfer</field>
-        <field name="arch" type="xml">
-            <tree>
-                <field name="name"/>
-                <field name="state"/>
-            </tree>
-        </field>
-    </record>
-    
-    <record id="view_stock_transfer_form" model="ir.ui.view">
-        <field name="name">stock.transfer.form</field>
-        <field name="model">stock.transfer</field>
-        <field name="arch" type="xml">
-            <form string="Move Lines" create="0" edit="0">
-                <header>
-                    <field name="state" widget="statusbar"/>
-                    <button name="confirm" states="draft" type="object" string="Confirm"/>
-                    <button name="cancel" states="confirm" type="object" string="Cancel"/>
-                    <button name="reset" states="cancel" type="object" string="Reset To Draft"/>
-                </header>
-                <sheet>
-                    <group>
-                        <field name="name"/>
-                    </group>
-                    <field name="stock_transfer_line">
-                        <form string='Lines'>
-                            <group>
-                                <group>
-                                    <field name="from_product_id"/>
-                                    <field name="from_product_uom_id"/>
-                                    <field name="product_uom_qty"/>
-                                    <field name="from_location_id"/>
-                                    <field name="from_location_dest_id"/>
-                                </group>
-                                <group>
-                                    <field name="to_product_id"/>
-                                    <field name="to_product_uom_id"/>
-                                    <field name="to_location_id"/>
-                                    <field name="to_location_dest_id"/>
-                                    <field name="move_id"/>
-                                </group>
-                            </group>
-                        </form>
-                        <tree string='Lines'>
-                            <field name="from_product_id"/>
-                            <field name="from_product_uom_id"/>
-                            <field name="product_uom_qty"/>
-                            <field name="from_location_id"/>
-                            <field name="from_location_dest_id"/>
-                            <field name="to_product_id"/>
-                            <field name="to_product_uom_id"/>
-                            <field name="to_location_id"/>
-                            <field name="to_location_dest_id"/>
-                            <field name="move_id"/>
-                        </tree>
-                    </field>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="stock_stock_transfer_view_search" model="ir.ui.view">
-        <field name="name">stock.transfer.search</field>
-        <field name="model">stock.transfer</field>
-        <field name="arch" type="xml">
-            <search string="Stock Moves">
-                <field name="name"/>
-                <field name="state"/>
-            </search>
-        </field>
-    </record>
-
-    
-    <record id="stock_stock_transfer_action" model="ir.actions.act_window">
-            <field name="name">Stock Transfer</field>
-            <field name="res_model">stock.transfer</field>
+<openerp>
+    <data>        
+		<record id="stock_transfer_settings_tree_view" model="ir.ui.view">
+            <field name="name">stock.transfer.settings_tree</field>
+            <field name="model">stock.transfer.settings</field>
+            <field name="arch" type="xml">
+            	<tree string="Stock Transfer settings">
+                    <field name="company_id" groups="base.group_multi_company" required="1"/>
+                    <field name="diff_amount"/>
+                    <field name="diff_qty"/>
+                    <field name="same_product"/>
+					<field name="only_single_product"/>
+					<field name="invoice_diff_qty"/>
+                </tree>
+            </field>
+        </record>
+        <record id="stock_transfer_settings_form_view" model="ir.ui.view">
+            <field name="name">stock.transfer.settings_form</field>
+            <field name="model">stock.transfer.settings</field>
+            <field name="arch" type="xml">
+                <form string="Stock Transfer settings">
+                    <header>
+                    </header>
+                    <sheet>
+                    	<div class="oe_button_box" name="button_box">
+							
+						</div>
+						
+						<group>
+							<field name="company_id" domain="[('parent_id','=',False)]" groups="base.group_multi_company" options="{'no_create': True}" context="{'user_preference': True}"/>	
+							<field name="diff_amount" groups="base.group_system"/>
+							<field name="diff_qty" groups="base.group_system"/>
+							<field name="same_product" groups="base.group_system"/>
+							<field name="only_single_product" groups="base.group_system"/>
+							<field name="invoice_diff_qty" groups="base.group_system"/>
+						</group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        
+        <record id="stock_transfer_settings_action" model="ir.actions.act_window">
+            <field name="name">Stock Transfer Settings</field>
             <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.transfer.settings</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_stock_transfer_tree"/>
-            <field name="context">{}</field>
-    </record>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new Configuration.
+              </p><p>
+               
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_stock_transfer_settings" action="stock_transfer_settings_action" name="Stock Journal Settings" parent="base.menu_administration" groups="group_transfer_user" sequence="21"/>
+		
+        <record id="stock_transfer_tree_view" model="ir.ui.view">
+            <field name="name">stock.transfer.tree</field>
+            <field name="model">stock.transfer</field>
+            <field name="arch" type="xml">
+            	<tree string="Stock Transfer" decoration-bf="state=='done'" decoration-it="state=='draft'" decoration-danger="state=='partially_available'" decoration-info="state=='available'" decoration-muted="state=='cancel'">
+                    <field name="name"/>
+<!--
+                    <field name="reference_id"/>
+-->
+                    <field name="date"/>
+                    <field name="invoice_id"/>
+                    <field name="org_id"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="stock_transfer_form_view" model="ir.ui.view">
+            <field name="name">stock.transfer.form</field>
+            <field name="model">stock.transfer</field>
+            <field name="arch" type="xml">
+                <form string="Stock Transfer">
+                    <header>
+                    	<button name="action_confirm" string="Check Availability" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','draft')]}" groups="stock_transfer.group_transfer_user"/>
+                    	<button name="action_confirm_recheck" string="Re-Check Availability" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','partially_available')]}" groups="stock_transfer.group_transfer_user"/>
+                    	<button name="action_done" string="Transfer" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','available')]}" groups="stock_transfer.group_transfer_manager"/>
+                    	<button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state','in',['done','cancel'])]}" groups="stock_transfer.group_transfer_user"/>
+                    	<button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','done')]}" groups="stock_transfer.group_transfer_manager"/>
+                    	<button name="action_draft" string="Set as New" type="object" class="oe_highlight" attrs="{'invisible': [('state','!=','cancel')]}" groups="stock_transfer.group_transfer_user"/>
+                    	<button name="action_update_pickings_done" string="Update GRN/MRN Done" type="object" attrs="{'invisible': ['|','|',('invoice_id','=',False),('stock_transfer_done','=',True),('state','!=','done')]}" groups="stock_transfer.group_transfer_user"/>
+                    	<button name="action_update_pickings_available" string="Make GRN/MRN Available" type="object" attrs="{'invisible': ['|','|',('invoice_id','=',False),('stock_transfer_done','=',False),('state','!=','done')]}" groups="stock_transfer.group_transfer_user"/>
+                    	<button name="action_update_pickings_available" string="Make GRN/MRN Available" type="object" attrs="{'invisible': ['|','|',('invoice_id','=',False),('stock_transfer_done','=',False),('state','=','done')]}" groups="jainerp_core.group_hide_features"/>
+                    	<field name="state" widget="statusbar" statusbar_visible="draft,available,done"/>
+                    </header>
+                    <sheet>
+                    	<div class="oe_button_box" name="button_box">
+							
+						</div>
+						<div class="oe_title">
+							<div class="oe_title">
+								<h1>
+									<field name="name" />
+									<br />
+								</h1>
+							</div>
+						</div>
+						<group>
+							<group>
+								<field name="company_id" domain="[('parent_id','=',False)]" groups="base.group_multi_company" options="{'no_create': True}"
+									attrs="{'readonly': [('state','!=','draft')]}" context="{'user_preference': True}"/>
+								<field name="org_id" required="1" domain="[('parent_id','=',company_id)]" options="{'no_create': True}" attrs="{'readonly': [('state','!=','draft')]}"/>
+								<field name="invoice_id" invisible="1" options="{'no_create': True}" context="{'default_type': 'in_invoice', 'type': 'in_invoice', 'journal_type': 'purchase'}"
+									attrs="{'readonly': [('state','!=','draft')],'required': [('product_validation','=',True)]}" domain="[('stock_transfer_done','=',False),('company_id','=',company_id),('state','in',['open','paid']),('doc_type','=',False),('bill_of_entry','=',False),('type','in',('in_invoice', 'in_refund'))]"/>
+								<field name="picking_ids" options="{'no_create': True}" context="{'default_picking_type_code': 'incoming', 'picking_type_code': 'incoming'}" widget="many2many_tags"
+									attrs="{'readonly': [('state','!=','draft')],'required': [('product_validation','=',True)]}" domain="[('stock_transfer_done','=',False),('company_id','=',company_id),('state','=','done'),('picking_type_code','=',('incoming'))]"/>
+									
+								<field name="partner_name" readonly="1"/>
+<!--
+								<field name="reference_id" domain="[('state','!=','done')]" attrs="{'readonly': [('state','!=','draft')]}"/>
+-->
+							</group>
+							<group>
+								<field name="date" required="1" attrs="{'readonly': [('state','!=','draft')]}"/>
+								<field name="location_id" options="{'no_create': True}" attrs="{'readonly': [('state','!=','draft')]}"
+									domain="[('company_id','=',company_id),('usage', '=', 'internal')]"/>	
+								<field name="diff_amount" attrs="{'invisible': [('diff_amount_validation','=',False)], 'required': [('diff_amount_validation','=',True)], 'readonly': [('state','!=','draft')]}"/>
+								<field name="diff_qty" attrs="{'invisible': [('diff_qty_validation','=',False)], 'required': [('diff_qty_validation','=',True)], 'readonly': [('state','!=','draft')]}"/>
+							</group>
+						</group>
+						<group>
+							<field name="diff_amount_validation" invisible="1"/>
+							<field name="diff_qty_validation" invisible="1"/>
+							<field name="product_validation" invisible="1"/>
+							<field name="single_product_validation" invisible="1"/>
+							<field name="alert_stock" invisible="1"/>
+							<field name="invoice_diff_qty" invisible="1"/>
+							<field name="stock_transfer_done" invisible="1"/>
+							<field name="partner_id" invisible="1"/>
+							<field name="inv_no" invisible="1"/>
+							
+						</group>
+						<notebook>
+							<page name="product_lines" string="Product Lines">
+								<group>
+									<group name="consume_products" string="Products to Consume">
+										<field name="input_product_lines" nolabel="1" options="{'reload_on_button': true}" attrs="{'invisible': [('state','!=','draft')]}">
+	                                        <tree string="Products to Consume" editable="bottom">
+	                                            <field name="product_id" domain="[('type','!=','service'),('company_id','=',parent.company_id)]" context="{'type': 'product','default_type': 'product'}"/>
+	                                            <field name="name" string="Description" invisible="1"/>
+	                                            <field name="product_qty" string="Quantity" required="1" sum="Total"/>
+	                                            <field name="qty_available" invisible="1"/>
+	                                            <field name="product_uom" string="UOM" readonly="1" required="1" options="{'no_open':True,'no_create':True}" groups="product.group_uom"/>
+	                                            <field name="price_unit" required="1"/>
+	                                            <field name='currency_id' invisible="1"/>
+	                                            <field name="input_transfer_id" invisible="1"/>
+	                                            <field name="invoice_line_id" invisible="1"/>
+	                                            <field name="picking_id" invisible="1"/>
+	                                            <field name='uom_id' invisible="1"/>
+	                                        </tree>
+	                                    </field>
+	                                    <field name="input_move_lines" nolabel="1" options="{'reload_on_button': true}" attrs="{'invisible': [('state','=','draft')],'readonly': [('state','!=','draft')]}">
+	                                    	<tree decoration-info="state == 'draft'" decoration-muted="state in ('cancel','done')" decoration-danger="state in ('confirmed','waiting')" string="Products to Consume">
+	                                           <field name="product_id"/>
+	                                           <field name="product_uom_qty" sum="Total"/>
+	                                           <field name="product_uom" string="UOM" groups="product.group_uom"/>
+	                                           <field name="price_unit"/>
+	                                           <field name="state" invisible="0"/>
+	                                           <field name="scrapped" invisible="1"/>
+	                                           <field name="input_transfer_id" invisible="1"/>
+	                                        </tree>
+	                                    </field>
+									</group>
+									<group name="produce_products" string="Products to Produce">
+										<field name="output_product_lines" nolabel="1" options="{'reload_on_button': true}" attrs="{'invisible': [('state','!=','draft')]}">
+	                                        <tree string="Products to Consume" editable="bottom">
+	                                            <field name="product_id" domain="[('type','!=','service'),('company_id','=',parent.company_id)]" context="{'type': 'product','default_type': 'product'}"/>
+	                                            <field name="name" string="Description" invisible="1"/>
+	                                            <field name="product_qty" required="1" string="Quantity" sum="Total"/>
+	                                            <field name="product_uom" string="UOM" readonly="1" required="1" options="{'no_open':True,'no_create':True}" groups="product.group_uom"/>
+	                                            <field name="price_unit" required="1"/>
+	                                            <field name='currency_id' invisible="1"/>
+	                                            <field name="output_transfer_id" invisible="1"/>
+	                                            <field name='uom_id' invisible="1"/>
+	                                        </tree>
+	                                    </field>
+	                                    <field name="output_move_lines" nolabel="1" options="{'reload_on_button': true}" attrs="{'invisible': [('state','=','draft')],'readonly': [('state','!=','draft')]}">
+	                                    	<tree decoration-info="state == 'draft'" decoration-muted="state in ('cancel','done')" decoration-danger="state in ('confirmed','waiting')" string="Products to Consume">
+	                                           <field name="product_id"/>
+	                                           <field name="product_uom_qty" sum="Total"/>
+	                                           <field name="product_uom" string="UOM" groups="product.group_uom"/>
+	                                           <field name="price_unit"/>
+	                                           <field name="state" invisible="0"/>
+	                                           <field name="scrapped" invisible="1"/>
+	                                           <field name="output_transfer_id" invisible="1"/>
+	                                        </tree>
+	                                    </field>
+									</group>
+								</group>
+							</page>
+						</notebook>
+						<group>
+							<field name="note" placeholder="Description about the transfer" attrs="{'readonly': [('state','!=','draft')]}"/>
+						</group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="stock_transfer_search" model="ir.ui.view">
+            <field name="name">stock.transfer.search</field>
+            <field name="model">stock.transfer</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name" string="Name" filter_domain="[('name','ilike',self)]"/>
+<!--
+                    <field name="reference_id" />
+-->
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="org_id" />
+                    <field name="invoice_id" />
+                    <field name="state" />
+                    <field name="date" />
+                    <filter string="New" name="draft" domain="[('state','=','draft')]" help="Stock Transfer which are New."/>
+                    <filter string="Available" name="available" domain="[('state','=','available')]" help="Stock Transfer which are Avaialble."/>
+                    <filter string="Canacel" name="cancel" domain="[('state','=','cancel')]" help="Stock Transfer which are Cancelled."/>
+                    <separator/>
+                    <group expand="0" string="Group By">
+                        <filter string="Company" domain="[]" context="{'group_by':'company_id'}" groups="base.group_multi_company"/>
+                        <filter string="Organization" domain="[]" context="{'group_by':'org_id'}"/>
+                        <filter string="Status" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Month" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+               </search>
+            </field>
+        </record>
+        <record id="stock_transfer_action" model="ir.actions.act_window">
+            <field name="name">Stock Transfer</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.transfer</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="stock_transfer_search"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a new Transfer.
+              </p><p>
+               
+              </p>
+            </field>
+        </record>
+        <menuitem id="menu_stock_transfer" action="stock_transfer_action" name="Stock Journal" parent="stock.menu_stock_inventory_control" groups="stock_transfer.group_transfer_user" sequence="31"/>
 
-    <menuitem 
-        action="stock_stock_transfer_action" 
-        id="stock_stock_transfer_menu" 
-        parent="stock.menu_warehouse_report" sequence="150"/>
-</odoo>
+<!--
+		<record id="inherit2_view_stock_move_forms" model="ir.ui.view">
+            <field name="name">tpt.stock.move.forms_inherit2</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_picking_tree"/>
+            <field name="arch" type="xml">
+       			<xpath expr="//field[@name='product_id']" position="after">
+           			<field name="reference_id" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" />			
+       			</xpath>
+            </field>
+         </record>
+         
+		<record id="view_picking_delivery_form_inherit2" model="ir.ui.view">
+            <field name="name">stock.picking.form_inherit2</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="jainerp_sales.view_picking_delivery_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='move_lines']/tree/field[@name='product_id']" position="after">
+					<field name="reference_id" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" />
+				</xpath> 
+				<xpath expr="//field[@name='move_lines_related']/tree/field[@name='product_id']" position="after">
+					<field name="reference_id" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" />
+				</xpath> 
+				<xpath expr="//field[@name='pack_operation_product_ids']/tree/field[@name='product_id']" position="after">
+					<field name="reference_ids" widget="many2many_tags" attrs="{'readonly': [('fresh_record', '=', False)]}" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" options="{'no_create':True}" />
+				</xpath>
+            </field>
+        </record>
+        
+        <record id="view_stock_transfer_forms1" model="ir.ui.view">
+            <field name="name">stock.picking.forms1</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="jainerp_sales.view_stock_transfer_forms"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='move_lines']/tree/field[@name='product_id']" position="after">
+					<field name="reference_id" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" />
+				</xpath>
+            </field>
+        </record>
+        <record id="view_stock_transfer_forms2" model="ir.ui.view">
+            <field name="name">stock.picking.forms2</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='pack_operation_product_ids']/tree/field[@name='product_id']" position="after">
+	            	<field name="reference_ids" widget="many2many_tags" attrs="{'readonly': [('fresh_record', '=', False)]}" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" options="{'no_create':True}" />
+	            </xpath>	
+            </field>
+        </record>
+            
+            
+        <record id="tpt_grn_form_inherit4" model="ir.ui.view">
+	        <field name="name">tpt.grn.form.inherit4</field>
+	        <field name="model">stock.picking</field>
+	        <field name="inherit_id" ref="jainerp_stock.tpt_grn_form"/>
+	        <field name="arch" type="xml">
+		        <xpath expr="//field[@name='pack_operation_product_ids']/tree/field[@name='product_id']" position="after">
+					<field name="reference_ids" widget="many2many_tags" attrs="{'readonly': [('fresh_record', '=', False)]}" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" options="{'no_create':True}" />
+				</xpath> 
+        	</field>
+       	</record>
+       	
+       	
+       	<record id="mrn_form_inherit4" model="ir.ui.view">
+	        <field name="name">MRN form_inherit4</field>
+	        <field name="model">stock.picking</field>
+			<field name="inherit_id" ref="jainerp_sales.mrn_form"/>
+	        <field name="arch" type="xml">
+	        	<xpath expr="//field[@name='pack_operation_product_ids']/tree/field[@name='product_id']" position="after">
+					<field name="reference_ids" widget="many2many_tags" attrs="{'readonly': [('fresh_record', '=', False)]}" domain="[('product_ids','in',product_id),('company_id','=',parent.company_id),('state','=','available')]" options="{'no_create':True}" />
+				</xpath> 
+            </field>
+        </record>
+-->
+        
+        
+    </data>
+</openerp>
+

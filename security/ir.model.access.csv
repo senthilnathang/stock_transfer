@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_transfer_user,stock.transfer_user,model_stock_transfer,group_transfer_user,1,1,1,0
+access_stock_transfer_line_user,stock.transfer.line_manager,model_stock_transfer_product_line,group_transfer_user,1,1,1,0
+access_stock_transfer_line_manager,stock.transfer.line_manager,model_stock_transfer_product_line,group_transfer_manager,1,1,1,0
+access_stock_settings_emp,stock.transfer_settings,model_stock_transfer_settings,base.group_user,1,0,0,0
+access_stock_settings_manager,stock.transfer_settings,model_stock_transfer_settings,base.group_system,1,1,1,0
+access_stock_journal_report,stock.journal.report,model_stock_journal_report,group_transfer_user,1,1,1,1

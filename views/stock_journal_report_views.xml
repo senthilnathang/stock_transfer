@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="stock_journal_report_view" model="ir.ui.view">
+        <field name="name">Stock Journal Report</field>
+        <field name="model">stock.journal.report</field>
+        <field name="arch" type="xml">
+            <form string="Stock Journal">
+            	<group>
+            		<group>
+            			<field name='company_id' groups="base.group_multi_company" domain="[('parent_id','=',False)]" 
+            				context="{'user_preference': True}" required="1" options="{'no_create': True}"/>
+            			<field name='org_id' domain="[('parent_id','=',company_id)]" options="{'no_create': True}"/>
+						<field name="product_ids" domain="[('company_id','=',company_id)]" widget="many2many_tags" options="{'no_create': True}"/>
+<!--
+						<field name="reference_ids" domain="[('company_id','=',company_id)]" widget="many2many_tags" options="{'no_create': True}"/>
+-->
+            		</group>
+            		<group>
+           				<field name="date_from" required="1"/>
+		                <field name="date_to" required="1"/>
+		                <field name="include_draft"/>
+           			</group>
+            	</group>
+            	
+                <footer>
+                	<button name="action_preview" string="Preview" type="object" /> 
+                	<button name="action_print" string="Export XLS" type="object"  default_focus="1" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"  class="oe_link"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="stock_journal_report_action"  model="ir.actions.act_window">
+        <field name="name">Stock Journal Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.journal.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="stock_journal_report_view"/>
+        <field name="target">new</field>
+    </record>
+	   
+    <menuitem name="Stock Journal Report" parent="stock.menu_warehouse_report"
+              action="stock_journal_report_action" id="menu_license_ledger_report" sequence="3" groups="stock_transfer.group_transfer_user"/>
+</odoo>

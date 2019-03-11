@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+<!--
+        <record id="action_stock_journal_report_xlsx" model="ir.actions.report.xml">
+			<field name="name">Stcok Journal Report</field>
+			<field name="model">stock.journal.report</field>
+			<field name="type">ir.actions.report.xml</field>
+			<field name="report_name">stock_transfer.stock_journal_report_xls</field>
+			<field name="report_type">xlsx</field>
+			<field name="auto" eval="False"/>
+	    </record>      
+-->
+    </data>
+</openerp>

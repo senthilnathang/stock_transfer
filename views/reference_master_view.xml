@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">        
+		<record model="ir.ui.menu" id="reference_master.menu_reference_master">
+ 			<field name="groups_id" eval="[(6,0,[ref('stock_transfer.group_transfer_user')])]"/>
+		</record>
+    </data>
+    <data>
+    	<record id="reference_master_form_view_inherit" model="ir.ui.view">
+            <field name="name">reference.master.form_inherit</field>
+            <field name="model">reference.master</field>
+            <field name="inherit_id" ref="reference_master.reference_master_form_view"></field>
+            <field name="arch" type="xml">
+                <button name="action_draft" position="attributes">
+                	<attribute name="groups">stock_transfer.group_transfer_user</attribute>
+                </button>
+                <button name="action_done" position="attributes">
+                	<attribute name="groups">stock_transfer.group_transfer_user</attribute>
+                </button>
+                <button name="action_available" position="attributes">
+                	<attribute name="groups">stock_transfer.group_transfer_user</attribute>
+                </button>
+                <button name="action_cancel" position="attributes">
+                	<attribute name="groups">stock_transfer.group_transfer_user</attribute>
+                </button>
+            </field>
+        </record>
+                    
+	</data>
+</openerp>
+

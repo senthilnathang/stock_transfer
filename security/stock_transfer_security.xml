@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_transfer_user" model="res.groups">
+        <field name="name">Stock Journal User</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+    </record>
+    <record id="group_transfer_manager" model="res.groups">
+        <field name="name">Stock Journal Manager</field>
+        <field name="implied_ids" eval="[(4, ref('group_transfer_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+    </record>
+
+</data>
+<data noupdate="1">
+<!-- Multi -->
+<!--
+    <record model="ir.rule" id="stock_transfer_rule">
+        <field name="name">Stock Transfer multi-company</field>
+        <field name="model_id" ref="model_stock_transfer"/>
+        <field name="groups" eval="[(4, ref('group_transfer_user')),(4, ref('group_transfer_manager'))]"/>
+        <field name="domain_force">['|',('company_id','child_of',[user.company_id.id]),('company_id','=',False)]</field>
+    </record>
+-->
+</data>
+</openerp>
